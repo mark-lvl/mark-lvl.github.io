@@ -1,7 +1,7 @@
 ---
 layout: post
 title:  "Filling NAs"
-date:   2018-07-26 21:46:30 +0300
+date:   2018-07-27 11:46:30 +0300
 categories: datacleaning
 ---
 ## Filling NAs
@@ -12,8 +12,10 @@ Most Machine Learning algorithms cannot work with missing features, in order to 
 * Set the values to some values (zero, mean, median, etc.)
 
 {% highlight python %}
-dataset_df.dropna(subset=["COLUMN_WITH_NA"]) # option 1 dataset_df.drop("COLUMN_WITH_NA", axis=1) # option 2
-median = dataset_df["COLUMN_WITH_NA"].median()  dataset_df["COLUMN_WITH_NA"].fillna(median) # option 3
+dataset_df.dropna(subset=["COLUMN_WITH_NA"]) # option 1
+dataset_df.drop("COLUMN_WITH_NA", axis=1) # option 2
+median = dataset_df["COLUMN_WITH_NA"].median()
+dataset_df["COLUMN_WITH_NA"].fillna(median) # option 3
 {% endhighlight %}
 
 Scikit-Learn provides a handy class to take care of missing values: Imputer. Here is how to use it. First, you need to create an Imputer instance, specifying that you want to replace each attribute’s missing values with the median of that attribute:
