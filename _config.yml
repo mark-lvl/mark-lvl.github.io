@@ -16,11 +16,13 @@
 title: Ez DS
 email: markteams@gmail.com
 description: >- # this means to ignore newlines until "baseurl:"
-  Learn Data Science together in the fast easiest way.
+  Learn Data Science together in the fast easiest wayyyy.
 baseurl: "" # the subpath of your site, e.g. /blog
 url: "https://mark-lvl.github.io/" # the base hostname & protocol for your site, e.g. http://example.com
 twitter_username: mark_lvl
 github_username:  mark_lvl
+google_verify: R_a69zlr29_DjBWBWlG-XKkqvBUCoIud4BfGar8gNfc
+bing_verify: 6517A628C5C6181EF084CCDE9B01C350
 
 # Build settings
 markdown: kramdown

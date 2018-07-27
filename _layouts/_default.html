@@ -2,5 +2,11 @@
   <head>
     {% include head.html %}
     {% seo %}
+
+    <meta name="google-site-verification" content="123123123">
+
+    {% if site.bing_verify %}
+    <meta name="msvalidate.01" content="{{ site.bing_verify }}" />
+    {% endif %}
   </head>
 </html>
