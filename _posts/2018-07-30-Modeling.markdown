@@ -39,6 +39,8 @@ lin_rmse = np.sqrt(lin_mse)
 lin_rmse
 {% endhighlight %}
 
+## Trying other models
+
 We can easily check other models in Scikit-Learn easily by changing the model name in our script. For example in following snippet we'll try DecisionTreeRegressor.
 
 {% highlight python %}
@@ -46,6 +48,8 @@ from sklearn.tree import DecisionTreeRegressor
 tree_reg = DecisionTreeRegressor()
 tree_reg.fit(dataset_features, dataset_labels)
 {% endhighlight %}
+
+## Cross-Validation
 
 If we check RMSE for DecisionTreeRegressor maybe we see a little value as error and that not necessarily means we have better model, mostly that simply because overfitting in model. A better solution for evaluating the model is using **K-fold Cross-Validation** which what it does is randomly splitting the training set set into some distinct subsets called *folds*, then trains and evaluates the model K times, by picking a different fold for evaluation every time and training on the other K-1 folds.
 
@@ -61,6 +65,71 @@ rmse_scores = np.sqrt(-scores)
 {% endhighlight %}
 
 **NOTE**: Scikit-Learn cross-validation features expect a utility function (greater is better) rather than a cost function (lower is better), so the scoring function is actually the opposite of the MSE (i.e., a negative value), which is why the preceding code computes -scores before calculating the square root.
+
+## Saving models (export models)
+There are 2 common methods for saving models, using python *pickle* module or using *sklearn.externals.joblib*
+
+{% highlight python %}
+from sklearn.externals import joblib
+
+# our model was already constructed and stored in my_model object.
+joblib.dump(my_model, "my_model.pkl")
+# For import the model later on in some point we can load model as shown
+my_model_loaded = joblib.load("my_model.pkl")
+{% endhighlight %}
+
+## Fine-Tune models
+Some models come with hyperparameters which is not always easy to choose the right values for each of them. So, one method to figure out the best values would be trying the combination of all the possible cases, but that is a very tedious work and sometimes even impossible to try all the combination by hand. A solution is using **GridSearchCV** to try all the combination and reporting the best values. The process is quite straight-forward, we need to define the parameters in a python dictionary and feed them with the desired model to the GridSearchCV.
+
+{% highlight python %}
+from sklearn.model_selection import GridSearchCV
+
+# Constructing the parameter dictionary
+param_grid = [
+  {'n_estimators': [3, 10, 30],
+  'max_features': [2, 4, 6, 8]},
+  {'bootstrap': [False],
+  'n_estimators': [3, 10],
+  'max_features': [2, 3, 4]},
+  ]
+
+forest_reg = RandomForestRegressor()
+
+# Initializing the GridSearchCV
+grid_search = GridSearchCV(forest_reg, param_grid, cv=5, scoring='neg_mean_squared_error')
+
+# Training the model
+grid_search.fit(dataset_features, dataset_labels)
+
+# Getting the best parameters after training the model
+grid_search.best_params_
+
+# Getting the best estimator directory from the model
+grid_search.best_estimator_
+
+# In order to check evaluation score in various parameters
+res = grid_search.cv_results_
+for mean_score, params in zip(res['mean_test_score'], res['params']):
+  print(np.sqrt(-mean_score), params)
+{% endhighlight %}
+
+GridSearchCV is only applicable when we are exploring relatively few combinations, but when the hyperparameters search space is *large*, **RandomizedSearchCV** is more preferable class. It evaluates a given number of random combinations by selecting a random value for each hyperparameter at every iteration which has an advantage against GridSearchCV which explores different values for each hyperparameter rather than just a few values per se.
+
+## Feature importance
+After Initializing and training the models we than gain good insights by observing the importance of each attributes in model. For example in the last model we can list all the attributes based on their importance in the model as shown below:
+
+
+{% highlight python %}
+feature_importances = grid_search.best_estimator_.feature_importances_
+# getting attributes names directly from the dataset
+# or from their corresponding transformer in case of encoding
+# by getting encoder.classes_
+attributes = dataset_df.columns
+
+# list the sorted attributes based on importance
+sorted(zip(feature_importances, attributes), reverse=True)
+{% endhighlight %}
+With this information, we may want to try dropping some of the less useful features or make new attributes by mixing others.
 
 {% highlight python %}
 {% endhighlight %}
