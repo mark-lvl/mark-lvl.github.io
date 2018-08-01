@@ -105,6 +105,7 @@ grid_search.fit(dataset_features, dataset_labels)
 grid_search.best_params_
 
 # Getting the best estimator directory from the model
+# this actually returns the best model
 grid_search.best_estimator_
 
 # In order to check evaluation score in various parameters
@@ -118,7 +119,6 @@ GridSearchCV is only applicable when we are exploring relatively few combination
 ## Feature importance
 After Initializing and training the models we than gain good insights by observing the importance of each attributes in model. For example in the last model we can list all the attributes based on their importance in the model as shown below:
 
-
 {% highlight python %}
 feature_importances = grid_search.best_estimator_.feature_importances_
 # getting attributes names directly from the dataset
@@ -131,5 +131,16 @@ sorted(zip(feature_importances, attributes), reverse=True)
 {% endhighlight %}
 With this information, we may want to try dropping some of the less useful features or make new attributes by mixing others.
 
+## Applying model on the Test set
+After doing all the above steps, we are all set to move ahead and applying what we have done on training dataset on test dataset too and evaluate the model on it.
+
 {% highlight python %}
+# we can easily get the final model by getting the best_estimator_
+final_model = grid_search.best_estimator_
+
+X_test_prepared = full_pipeline.transform(test_dataset_features)
+
+final_predictions = final_model.predict(X_test_prepared)
+final_mse = mean_squared_error(test_dataset_labels, final_predictions)
+final_rmse = np.sqrt(final_mse)
 {% endhighlight %}
