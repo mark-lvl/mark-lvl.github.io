@@ -1,0 +1,66 @@
+---
+layout: post
+title:  "Select, Train and Evaluate Models"
+date:   2018-07-30 16:00:00 +0300
+categories: modelling machinelearning scikit
+---
+Usually the next step after getting the data and exploring it, make train and test sample and cleaning up throughout pipelines. We are ready to select and train a Machine Learning model.
+
+For example consider an imaginary dataset which the target attribute is a numerical feature and we want to predict this feature by using all other variables:
+
+{% highlight python %}
+from sklearn.linear_model import LinearRegression
+
+lin_reg = LinearRegression()
+# Training the model
+lin_reg.fit(dataset_features, dataset_labels)
+
+# selecting a few row of dataset to check prediction
+some_data = dataset_features.iloc[:5]
+some_labels = dataset_labels.iloc[:5]
+
+# printing the predictions and actual values
+print("Predictions:\t", lin_reg.predict(some_data))
+print("Labels:\t\t", list(some_labels))
+{% endhighlight %}
+
+## Evaluate model
+In order to check a regression model accuracy we can measure model's RMSE on the whole training set using Scikit-Learn's *mean_squared_error* function.
+
+{% highlight python %}
+from sklearn.metrics import mean_squared_error
+
+predictions = lin_reg.predict(some_data)
+
+lin_mse = mean_squared_error(dataset_labels, predictions)
+
+lin_rmse = np.sqrt(lin_mse)
+
+lin_rmse
+{% endhighlight %}
+
+We can easily check other models in Scikit-Learn easily by changing the model name in our script. For example in following snippet we'll try DecisionTreeRegressor.
+
+{% highlight python %}
+from sklearn.tree import DecisionTreeRegressor
+tree_reg = DecisionTreeRegressor()
+tree_reg.fit(dataset_features, dataset_labels)
+{% endhighlight %}
+
+If we check RMSE for DecisionTreeRegressor maybe we see a little value as error and that not necessarily means we have better model, mostly that simply because overfitting in model. A better solution for evaluating the model is using **K-fold Cross-Validation** which what it does is randomly splitting the training set set into some distinct subsets called *folds*, then trains and evaluates the model K times, by picking a different fold for evaluation every time and training on the other K-1 folds.
+
+{% highlight python %}
+from sklearn.model_selection import cross_val_score
+# just for the sake of example we're using the last constructed model
+# in this notebook.
+# As a rule of thumb if we have no idea about the right value for K,
+# we can pick 10.
+scores = cross_val_score(tree_reg, dataset_df, dataset_labels, scoring="neg_mean_squared_error", cv=10)
+
+rmse_scores = np.sqrt(-scores)
+{% endhighlight %}
+
+**NOTE**: Scikit-Learn cross-validation features expect a utility function (greater is better) rather than a cost function (lower is better), so the scoring function is actually the opposite of the MSE (i.e., a negative value), which is why the preceding code computes -scores before calculating the square root.
+
+{% highlight python %}
+{% endhighlight %}
